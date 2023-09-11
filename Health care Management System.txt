@@ -1,0 +1,164 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+
+using namespace std;
+
+class Person {
+protected:
+    string name;
+    int age;
+    string address;
+
+public:
+    Person(const string& n, int a, const string& ad)
+        : name(n), age(a), address(ad) {}
+
+    virtual void displayInfo() const = 0;
+};
+
+class Patient : public Person {
+protected:
+    string disease;
+    int patientID;
+
+public:
+    Patient(const string& n, int a, const string& ad, const string& d, int id)
+        : Person(n, a, ad), disease(d), patientID(id) {}
+
+    void displayInfo() const override {
+        cout << "Patient ID: " << patientID << "\n";
+        cout << "Patient Name: " << name << "\n";
+        cout << "Age: " << age << "\n";
+        cout << "Address: " << address << "\n";
+        cout << "Disease: " << disease << "\n";
+    }
+
+    void saveData(ofstream& file) const {
+        file << "Patient Data:\n";
+        file << "Patient ID: " << patientID << "\n";
+        file << "Patient Name: " << name << "\n";
+        file << "Age: " << age << "\n";
+        file << "Address: " << address << "\n";
+        file << "Disease: " << disease << "\n";
+        file << "-----------------------------\n";
+    }
+};
+
+class Doctor : public Person {
+protected:
+    string specialization;
+
+public:
+    Doctor(const string& n, int a, const string& ad, const string& s)
+        : Person(n, a, ad), specialization(s) {}
+
+    void displayInfo() const override {
+        cout << "Doctor Name: " << name << "\n";
+        cout << "Age: " << age << "\n";
+        cout << "Address: " << address << "\n";
+        cout << "Specialization: " << specialization << "\n";
+    }
+
+    void saveData(ofstream& file) const {
+        file << "Doctor Data:\n";
+        file << "Doctor Name: " << name << "\n";
+        file << "Age: " << age << "\n";
+        file << "Address: " << address << "\n";
+        file << "Specialization: " << specialization << "\n";
+        file << "-----------------------------\n";
+    }
+};
+
+class Appointment {
+protected:
+    string appointmentDate;
+    double totalPrice;
+
+public:
+    Appointment(const string& date, double price)
+        : appointmentDate(date), totalPrice(price) {}
+
+    void displayInfo() const {
+        cout << "Appointment Date: " << appointmentDate << "\n";
+        cout << "Total Price: " << totalPrice << "\n";
+    }
+
+    void saveData(ofstream& file) const {
+        file << "Appointment Data:\n";
+        file << "Appointment Date: " << appointmentDate << "\n";
+        file << "Total Price: " << totalPrice << "\n";
+        file << "-----------------------------\n";
+    }
+};
+
+void savePatientData(const Patient& patient, const Doctor& doctor, const Appointment& appointment) {
+    ofstream file("patient_data.txt", ios::app);
+    if (file.is_open()) {
+        patient.saveData(file);
+        doctor.saveData(file);
+        appointment.saveData(file);
+        file.close();
+    } else {
+        cerr << "Error: Unable to save patient data to file.\n";
+    }
+}
+
+int main() {
+    string patientName, patientAddress, patientDisease;
+    int patientAge, patientID;
+    string doctorName, doctorAddress, doctorSpecialization;
+    int doctorAge;
+    string appointmentDate;
+    double appointmentPrice;
+
+    cout << "Healthcare Management System\n";
+    cout << "-----------------------------\n";
+
+    cout << "Enter Patient Name: ";
+    getline(cin, patientName);
+    cout << "Enter Patient Age: ";
+    cin >> patientAge;
+    cin.ignore();  
+    cout << "Enter Patient Address: ";
+    getline(cin, patientAddress);
+    cout << "Enter Patient Disease: ";
+    getline(cin, patientDisease);
+    cout << "Enter Patient ID: ";
+    cin >> patientID;
+
+    Patient patient(patientName, patientAge, patientAddress, patientDisease, patientID);
+
+    cin.ignore();  
+    cout << "Enter Doctor Name: ";
+    getline(cin, doctorName);
+    cout << "Enter Doctor Age: ";
+    cin >> doctorAge;
+    cin.ignore();
+    cout << "Enter Doctor Address: ";
+    getline(cin, doctorAddress);
+    cout << "Enter Doctor Specialization: ";
+    getline(cin, doctorSpecialization);
+
+    Doctor doctor(doctorName, doctorAge, doctorAddress, doctorSpecialization);
+
+    cout << "Enter Appointment Date: ";
+    getline(cin, appointmentDate);
+    cout << "Enter Total Price: ";
+    cin >> appointmentPrice;
+
+    Appointment appointment(appointmentDate, appointmentPrice);
+
+    savePatientData(patient, doctor, appointment);
+
+    cout << "\nPatient Information:\n";
+    patient.displayInfo();
+
+    cout << "\nDoctor Information:\n";
+    doctor.displayInfo();
+
+    cout << "\nAppointment Information:\n";
+    appointment.displayInfo();
+
+    return 0;
+}
